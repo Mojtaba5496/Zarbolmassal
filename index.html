@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ضرب‌المثل‌یار</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#131B33">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ضرب‌المثل‌یار">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night: #131B33;
+    --night-2: #1D2A4D;
+    --panel: #24325C;
+    --ember: #E8A33D;
+    --ember-dim: #B97D2A;
+    --rust: #C1502E;
+    --sage: #7FA872;
+    --parchment: #F2E8D5;
+    --thread: #D9C9A3;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(232,163,61,0.15), transparent 60%),
+      var(--night);
+    color: var(--parchment);
+    font-family: 'Vazirmatn', sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px 16px;
+    overflow-x:hidden;
+  }
+
+  .wrap{ width:100%; max-width: 560px; }
+
+  header{ text-align:center; margin-bottom: 22px; position:relative; }
+  .ember-glow{
+    position:absolute; top:-40px; left:50%; transform:translateX(-50%);
+    width:180px; height:180px; border-radius:50%;
+    background: radial-gradient(circle, rgba(232,163,61,0.35), transparent 70%);
+    filter: blur(4px);
+    pointer-events:none;
+    animation: flicker 4s ease-in-out infinite;
+  }
+  @keyframes flicker{
+    0%,100%{ opacity:0.7; transform:translateX(-50%) scale(1);}
+    50%{ opacity:1; transform:translateX(-50%) scale(1.06);}
+  }
+  h1{
+    font-family:'Lalezar', sans-serif;
+    font-size: 2.5rem;
+    color: var(--ember);
+    letter-spacing: 1px;
+    position:relative;
+    text-shadow: 0 0 18px rgba(232,163,61,0.35);
+  }
+  .subtitle{
+    color: var(--thread);
+    font-size: 0.9rem;
+    margin-top: 4px;
+    font-weight:500;
+  }
+
+  .kilim{
+    height: 14px;
+    margin: 18px 0;
+    background:
+      linear-gradient(135deg, var(--ember) 25%, transparent 25%) 0 0/16px 16px,
+      linear-gradient(225deg, var(--ember) 25%, transparent 25%) 0 0/16px 16px,
+      linear-gradient(315deg, var(--rust) 25%, transparent 25%) 0 0/16px 16px,
+      linear-gradient(45deg, var(--rust) 25%, transparent 25%) 0 0/16px 16px;
+    opacity:0.85;
+    border-radius: 2px;
+  }
+
+  .card{
+    background: var(--panel);
+    border-radius: 18px;
+    padding: 22px 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    border: 1px solid rgba(217,201,163,0.12);
+  }
+
+  .level-row{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:0.85rem; color: var(--thread); margin-bottom: 6px;
+  }
+  .level-row b{ color: var(--ember); font-weight:700; }
+  .score{ color: var(--sage); font-weight:600; }
+
+  .word-progress{
+    text-align:center;
+    font-size: 0.78rem;
+    color: var(--thread);
+    margin-bottom: 16px;
+  }
+  .word-progress .dot{
+    display:inline-block; width:8px; height:8px; border-radius:50%;
+    background: rgba(217,201,163,0.25); margin: 0 3px;
+  }
+  .word-progress .dot.done{ background: var(--sage); }
+  .word-progress .dot.current{ background: var(--ember); }
+
+  /* --- mask / blanks --- */
+  .mask-row{
+    display:flex; gap:8px; justify-content:center; margin-bottom: 22px; flex-wrap:wrap;
+  }
+  .letter-box{
+    width: 40px; height: 46px;
+    border-radius: 10px;
+    background: var(--night-2);
+    border: 1.5px solid rgba(217,201,163,0.2);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Lalezar', sans-serif;
+    font-size: 1.4rem;
+    color: var(--ember);
+  }
+  .letter-box.given{
+    border-color: var(--ember-dim);
+    background: rgba(232,163,61,0.1);
+  }
+  .letter-box.filled{
+    border-color: var(--sage);
+    color: var(--sage);
+    background: rgba(127,168,114,0.12);
+  }
+  .letter-box.wrong{ animation: shake .3s; border-color: var(--rust); }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-4px);}
+    75%{transform:translateX(4px);}
+  }
+
+  /* --- letter tiles pool --- */
+  .tile-row{
+    display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom: 16px;
+  }
+  .tile{
+    width: 46px; height: 46px;
+    border-radius: 10px;
+    background: var(--ember);
+    color: var(--night);
+    border:none;
+    font-family:'Lalezar', sans-serif;
+    font-size: 1.3rem;
+    cursor:pointer;
+    transition: transform .15s, opacity .15s;
+  }
+  .tile:hover{ transform: translateY(-2px); }
+  .tile:active{ transform: scale(0.92); }
+  .tile.used{ visibility:hidden; }
+
+  /* --- Arrange phase (word order) --- */
+  .arrange-area{ text-align:center; }
+  .answer-row{
+    min-height: 54px;
+    background: var(--night-2);
+    border-radius: 12px;
+    border: 1.5px dashed rgba(217,201,163,0.3);
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;
+    padding: 10px;
+    margin-bottom: 16px;
+  }
+  .chip{
+    background: var(--ember);
+    color: var(--night);
+    font-weight:700;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border:none;
+    cursor:pointer;
+    font-family:'Vazirmatn', sans-serif;
+    font-size: 0.95rem;
+    transition: transform .15s, opacity .15s;
+  }
+  .chip:hover{ transform: translateY(-2px); }
+  .chip:active{ transform: scale(0.95); }
+  .chip.placed{
+    background: var(--panel);
+    color: var(--thread);
+    border: 1px solid var(--thread);
+    cursor: default;
+  }
+  .pool{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+
+  /* --- Buttons --- */
+  .actions{ display:flex; gap:10px; margin-top: 18px; justify-content:center; flex-wrap:wrap;}
+  button.primary{
+    background: var(--ember);
+    color: var(--night);
+    border:none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-family:'Vazirmatn', sans-serif;
+    font-weight:700;
+    font-size: 0.95rem;
+    cursor:pointer;
+    transition: filter .15s, transform .15s;
+  }
+  button.primary:hover{ filter: brightness(1.08); transform: translateY(-1px);}
+  button.primary:disabled{ opacity:0.4; cursor:not-allowed; transform:none; }
+  button.ghost{
+    background: transparent;
+    color: var(--thread);
+    border: 1.5px solid rgba(217,201,163,0.3);
+    padding: 11px 18px;
+    border-radius: 24px;
+    font-family:'Vazirmatn', sans-serif;
+    font-size: 0.9rem;
+    cursor:pointer;
+  }
+  button.ghost:hover{ border-color: var(--ember); color: var(--ember); }
+
+  .feedback{ text-align:center; margin-top:14px; font-weight:600; min-height:1.4em; }
+  .feedback.ok{ color: var(--sage); }
+  .feedback.bad{ color: var(--rust); }
+
+  .win-screen{ text-align:center; padding: 10px 0; }
+  .win-screen .proverb-final{
+    font-family:'Lalezar', sans-serif;
+    font-size: 1.5rem;
+    color: var(--ember);
+    line-height: 2;
+    margin: 14px 0 20px;
+  }
+
+  footer{ text-align:center; margin-top: 18px; color: var(--thread); font-size:0.75rem; opacity:0.7; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="ember-glow"></div>
+    <h1>ضرب‌المثل‌یار</h1>
+    <div class="subtitle">حرف‌ها رو به ترتیب بزن تا کلمه ساخته بشه</div>
+  </header>
+
+  <div class="kilim"></div>
+
+  <div class="card">
+    <div class="level-row">
+      <span>مرحله <b id="levelNum">1</b> از <b id="levelTotal">20</b></span>
+      <span class="score">امتیاز: <span id="scoreVal">0</span></span>
+    </div>
+    <div class="word-progress" id="wordProgress"></div>
+
+    <div id="gameArea"></div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <div class="actions" id="actions"></div>
+  </div>
+
+  <footer>ضرب‌المثل‌یار — ۱۴۰ ضرب‌المثل</footer>
+</div>
+
+<script>
+const PROVERBS = [
+  "دست بالای دست بسیار است",
+  "آب در کوزه و ما تشنه‌لبان",
+  "کاچی به از هیچی",
+  "یک دست صدا ندارد",
+  "آب زیر کاه",
+  "هر گردی گردو نیست",
+  "جوجه را آخر پاییز می‌شمرند",
+  "آب رفته به جوی برنمی‌گردد",
+  "دود از کنده بلند می‌شود",
+  "عاقبت گرگ‌زاده گرگ شود",
+  "کاسه داغ‌تر از آش",
+  "سنگ مفت گنجشک مفت",
+  "دیگ به دیگ می‌گوید روت سیاه",
+  "مرگ خوب است ولی برای همسایه",
+  "نوش دارو بعد از مرگ سهراب",
+  "از این ستون به آن ستون فرج است",
+  "کوه به کوه نمی‌رسد آدم به آدم می‌رسد",
+  "دیوار موش دارد موش هم گوش دارد",
+  "سگ زرد برادر شغال است",
+  "هرکه بامش بیش برفش بیشتر",
+  "جوینده یابنده است",
+  "خواستن توانستن است",
+  "کار نیکو کردن از پر کردن است",
+  "دروغگو دشمن خداست",
+  "تا تنور گرم است نان بچسبان",
+  "سیلی نقد به از حلوای نسیه است",
+  "شاهنامه آخرش خوش است",
+  "عجله کار شیطان است",
+  "صبر ایوب می‌خواهد",
+  "کوزه‌گر از کوزه‌ی شکسته آب می‌خورد",
+  "مرغ همسایه غاز است",
+  "نابرده رنج گنج میسر نمی‌شود",
+  "نان به نرخ روز خوردن",
+  "نخود هر آشی بودن",
+  "یک تیر و دو نشان",
+  "آسمان همیشه ابری نیست",
+  "باد آورده را باد می‌برد",
+  "بادمجان بم آفت ندارد",
+  "بار کج به منزل نمی‌رسد",
+  "پول علف خرس نیست",
+  "تخم‌مرغ‌دزد شتردزد می‌شود",
+  "تره به تخمش می‌رود حسنی به باباش",
+  "چاه مکن بهر کسی اول خودت بیفتی",
+  "خر ما از کرگی دم نداشت",
+  "دشمن دانا بهتر از دوست نادان است",
+  "دیوار حاشا بلند است",
+  "زیره به کرمان بردن",
+  "سالی که نکوست از بهارش پیداست",
+  "سنگ بزرگ علامت نزدن است",
+  "شتر دیدی ندیدی",
+  "شکم گشنه ایمان ندارد",
+  "علف باید به دهان بز شیرین بیاید",
+  "فلفل نبین چه ریزه بشکن ببین چه تیزه",
+  "قناعت توانگر کند مرد را",
+  "کار امروز به فردا میفکن",
+  "کبوتر با کبوتر باز با باز",
+  "کیسه‌ی خالی سرپا نمی‌ایستد",
+  "گر صبر کنی ز غوره حلوا سازی",
+  "ماهی را هر وقت از آب بگیری تازه است",
+  "مزد آن گرفت جان برادر که کار کرد",
+  "هر که خربزه می‌خورد پای لرزش هم می‌نشیند",
+  "آدم دانا به نشتر نزند مشت",
+  "آفتاب لب بام",
+  "از آب گل‌آلود ماهی گرفتن",
+  "از این گوش می‌گیرد از آن گوش در می‌کند",
+  "از دماغ فیل افتاده",
+  "اسب پیشکشی را دندان نمی‌شمارند",
+  "با دم شیر بازی نمی‌کنند",
+  "با یک گل بهار نمی‌شود",
+  "تب تند زودسرد است",
+  "تیشه به ریشه خود زدن",
+  "جای سوزن انداختن نیست",
+  "چراغی که به خانه رواست به مسجد حرام است",
+  "حلال‌زاده به عمو رفته",
+  "خودم کردم که لعنت بر خودم باد",
+  "دست‌اش نمک ندارد",
+  "دیر رسیدن بهتر از هرگز نرسیدن است",
+  "رطب خورده منع رطب چون کند",
+  "زبان سرخ سر سبز می‌دهد بر باد",
+  "زیرکاسه نیم‌کاسه است",
+  "صدای دهل از دور خوش است",
+  "غافل از انتظار می‌خورد سیلی",
+  "آب که سربالا برود",
+  "آب پاکی روی دست کسی ریختن",
+  "آسمان به زمین نمی‌آید",
+  "از تو نی به در نمی‌آید",
+  "از ماست که بر ماست",
+  "به آب و آتش زدن",
+  "تخم دو زرده گذاشتن",
+  "جان می‌کند و جان می‌داد",
+  "چوب دو سر طلا",
+  "خواب دیدی خیر باشد",
+  "در خانه اگر کس است یک حرف بس است",
+  "دنیا دار مکافات است",
+  "دود چراغ خوردن",
+  "دوغ و دوشاب را یکی کردن",
+  "روباه دم خود را می‌بیند",
+  "سرکه‌ی مفت از عسل شیرین‌تر است",
+  "سگ صاحبش را می‌شناسد",
+  "سنگ را بسته سگ را باز کرده‌اند",
+  "شاخ و شانه کشیدن",
+  "شتر سواری دولا دولا نمی‌شود",
+  "شیر بی‌یال و دم و اشکم",
+  "طمع سیری ندارد",
+  "عذر بدتر از گناه",
+  "غریبی و بی‌کسی",
+  "کاه از خرمن دیگران نمی‌برند",
+  "کبک سرش را زیر برف کرده",
+  "کوزه هرچه ازش برون تراود همان در اوست",
+  "گرگ باران‌دیده",
+  "گندم از گندم بروید جو ز جو",
+  "لقمه‌ی بزرگ‌تر از دهان",
+  "مار گزیده از ریسمان سیاه و سفید می‌ترسد",
+  "ماست‌ها را کیسه کردن",
+  "مو را از ماست می‌کشد",
+  "میان دعوا حلوا خیر نمی‌کنند",
+  "نان کسی را آجر کردن",
+  "نوکه اومد به بازار کهنه شد دل‌آزار",
+  "همرنگ جماعت شدن",
+  "هرکس در خانه‌اش را ببندد",
+  "یک بام و دو هوا",
+  "یک لاقبا",
+  "آب از آسیاب افتاد",
+  "آب در هاون کوبیدن",
+  "آدم عاقل دوبار از یک سوراخ گزیده نمی‌شود",
+  "از هول حلیم توی دیگ افتادن",
+  "با کاه دیوار می‌کشد",
+  "بادنجان دور قاب‌چین",
+  "باد در قفس کردن",
+  "بختش باز است",
+  "پز عالی جیب خالی",
+  "پیراهن عثمان کردن",
+  "تخته پاره‌ای برای غریق",
+  "جوان همیشه جوان نمی‌ماند",
+  "چیزی که عوض دارد گله ندارد",
+  "خدا رحم به بنده‌اش می‌کند",
+  "خر بیار و باقالی بار کن",
+  "خواهی نشوی رسوا همرنگ جماعت شو",
+  "در سوراخ موش می‌شود",
+  "سالته پیرهنی و آبستنته دامنی"
+];
+
+const SAVE_KEY = 'zarbolmasal_yar_progress';
+
+function loadProgress(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return { level: 0, score: 0 };
+    const parsed = JSON.parse(raw);
+    return {
+      level: Number.isInteger(parsed.level) ? parsed.level : 0,
+      score: Number.isInteger(parsed.score) ? parsed.score : 0
+    };
+  } catch(e){
+    return { level: 0, score: 0 };
+  }
+}
+
+function saveProgress(){
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ level, score }));
+  } catch(e){ /* ignore storage errors */ }
+}
+
+const saved = loadProgress();
+let level = Math.min(saved.level, PROVERBS.length - 1);
+let score = saved.score;
+let words = [];
+let wordIdx = 0;
+let unitsAll = [];     // word split into visual letter units (handles نیم‌فاصله)
+let filledUnits = [];  // units confirmed so far, starting with the given first letter
+let pickHistory = [];  // tile ids picked, in order (for undo)
+let tiles = []; // {ch, id, used}
+
+const gameArea = document.getElementById('gameArea');
+const feedback = document.getElementById('feedback');
+const actions = document.getElementById('actions');
+const wordProgress = document.getElementById('wordProgress');
+document.getElementById('levelTotal').textContent = PROVERBS.length;
+document.getElementById('scoreVal').textContent = score;
+
+// splits a word into visual letter units, keeping a نیم‌فاصله (ZWNJ/ZWJ)
+// attached to the letter before it instead of becoming its own invisible unit
+function toUnits(str){
+  const chars = Array.from(str);
+  const JOINERS = ['\u200C','\u200D'];
+  const units = [];
+  for(const ch of chars){
+    if(JOINERS.includes(ch) && units.length > 0){
+      units[units.length-1] += ch;
+    } else {
+      units.push(ch);
+    }
+  }
+  return units;
+}
+
+function startLevel(i){
+  words = PROVERBS[i].split(' ');
+  wordIdx = 0;
+  feedback.textContent = '';
+  feedback.className = 'feedback';
+  document.getElementById('levelNum').textContent = i+1;
+  startWordGuess();
+}
+
+function renderWordProgress(){
+  wordProgress.innerHTML = words.map((w,i)=>{
+    const cls = i < wordIdx ? 'done' : (i===wordIdx ? 'current' : '');
+    return `<span class="dot ${cls}"></span>`;
+  }).join('');
+}
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+const PERSIAN_LETTERS = ['ا','ب','پ','ت','ث','ج','چ','ح','خ','د','ذ','ر','ز','ژ','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ک','گ','ل','م','ن','و','ه','ی'];
+
+function startWordGuess(){
+  const word = words[wordIdx];
+  unitsAll = toUnits(word);
+  filledUnits = [unitsAll[0]]; // first letter given as hint
+  pickHistory = [];
+
+  const neededUnits = unitsAll.slice(1);
+  const remaining = neededUnits.map((ch,i)=>({ch, id:i, used:false}));
+
+  // add 1-2 decoy tiles so it's not too easy to guess by elimination
+  // (skip for words that are already complete with just the first letter)
+  if(unitsAll.length > 1){
+    const decoyCount = Math.random() < 0.5 ? 1 : 2;
+    for(let k=0;k<decoyCount;k++){
+      const decoyCh = PERSIAN_LETTERS[Math.floor(Math.random()*PERSIAN_LETTERS.length)];
+      remaining.push({ch: decoyCh, id: neededUnits.length + k, used:false, decoy:true});
+    }
+  }
+
+  tiles = shuffle(remaining);
+  renderWordProgress();
+  renderGuess();
+  actions.innerHTML = `<button class="ghost" id="undoBtn">بازگشت یک حرف</button>`;
+  document.getElementById('undoBtn').addEventListener('click', undoLetter);
+
+  // words that are already complete with just the first letter (1-letter words)
+  if(filledUnits.length === unitsAll.length){
+    checkWordComplete();
+  }
+}
+
+function renderGuess(){
+  gameArea.innerHTML = '';
+
+  const maskRow = document.createElement('div');
+  maskRow.className = 'mask-row';
+  for(let i=0;i<unitsAll.length;i++){
+    const box = document.createElement('div');
+    if(i < filledUnits.length){
+      box.className = 'letter-box ' + (i===0 ? 'given' : 'filled');
+      box.textContent = filledUnits[i];
+    } else {
+      box.className = 'letter-box';
+      box.textContent = '';
+    }
+    maskRow.appendChild(box);
+  }
+  gameArea.appendChild(maskRow);
+
+  const tileRow = document.createElement('div');
+  tileRow.className = 'tile-row';
+  tiles.forEach(t=>{
+    const btn = document.createElement('button');
+    btn.className = 'tile' + (t.used ? ' used' : '');
+    btn.textContent = t.ch;
+    btn.disabled = t.used;
+    btn.addEventListener('click', ()=>pickTile(t.id));
+    tileRow.appendChild(btn);
+  });
+  gameArea.appendChild(tileRow);
+}
+
+function pickTile(id){
+  const t = tiles.find(x=>x.id===id && !x.used);
+  if(!t) return;
+  t.used = true;
+  filledUnits.push(t.ch);
+  pickHistory.push(id);
+  renderGuess();
+
+  if(filledUnits.length === unitsAll.length){
+    checkWordComplete();
+  }
+}
+
+function checkWordComplete(){
+  const word = words[wordIdx];
+  const guess = filledUnits.join('');
+  if(guess === word){
+    score += 10;
+    document.getElementById('scoreVal').textContent = score;
+    saveProgress();
+    feedback.textContent = 'درسته! 👏';
+    feedback.className = 'feedback ok';
+    setTimeout(()=>{
+      wordIdx++;
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      if(wordIdx === words.length){
+        startArrangePhase();
+      } else {
+        startWordGuess();
+      }
+    }, 500);
+  } else {
+    feedback.textContent = 'اشتباهه، دوباره امتحان کن';
+    feedback.className = 'feedback bad';
+    const boxes = gameArea.querySelectorAll('.letter-box');
+    boxes.forEach(b=>b.classList.add('wrong'));
+    setTimeout(()=>{
+      filledUnits = [unitsAll[0]];
+      pickHistory = [];
+      tiles.forEach(t=>t.used=false);
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      renderGuess();
+    }, 700);
+  }
+}
+
+function undoLetter(){
+  if(filledUnits.length <= 1) return;
+  filledUnits.pop();
+  const lastId = pickHistory.pop();
+  const t = tiles.find(x=>x.id===lastId);
+  if(t) t.used = false;
+  renderGuess();
+}
+
+function startArrangePhase(){
+  wordProgress.innerHTML = '';
+  const shuffled = shuffle(words);
+  let placed = [];
+
+  gameArea.innerHTML = `
+    <div class="arrange-area">
+      <div class="answer-row" id="answerRow"></div>
+      <div class="pool" id="pool"></div>
+    </div>
+  `;
+  feedback.textContent = 'کلمه‌ها رو به ترتیب درست بزن';
+  feedback.className = 'feedback';
+
+  const pool = document.getElementById('pool');
+  shuffled.forEach((w)=>{
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.textContent = w;
+    btn.addEventListener('click', ()=>{
+      placed.push(w);
+      btn.remove();
+      renderAnswerRow(placed);
+      if(placed.length === words.length) checkArrangement(placed);
+    });
+    pool.appendChild(btn);
+  });
+
+  renderAnswerRow(placed);
+  actions.innerHTML = `<button class="ghost" id="resetArrangeBtn">دوباره بچین</button>`;
+  document.getElementById('resetArrangeBtn').addEventListener('click', startArrangePhase);
+}
+
+function renderAnswerRow(placed){
+  const row = document.getElementById('answerRow');
+  row.innerHTML = '';
+  placed.forEach(w=>{
+    const chip = document.createElement('span');
+    chip.className = 'chip placed';
+    chip.textContent = w;
+    row.appendChild(chip);
+  });
+}
+
+function checkArrangement(placed){
+  const guess = placed.join(' ');
+  const answer = words.join(' ');
+  if(guess === answer){
+    score += 20;
+    document.getElementById('scoreVal').textContent = score;
+    saveProgress();
+    showWin();
+  } else {
+    feedback.textContent = 'ترتیب درست نیست، دوباره امتحان کن';
+    feedback.className = 'feedback bad';
+    setTimeout(startArrangePhase, 900);
+  }
+}
+
+function showWin(){
+  gameArea.innerHTML = `
+    <div class="win-screen">
+      <div>🎉 آفرین!</div>
+      <div class="proverb-final">${words.join(' ')}</div>
+    </div>
+  `;
+  feedback.textContent = '';
+  const isLast = level === PROVERBS.length - 1;
+  actions.innerHTML = isLast
+    ? `<div class="feedback ok">همه‌ی ضرب‌المثل‌ها تموم شد! 👏</div>`
+    : `<button class="primary" id="nextBtn">مرحله بعد</button>`;
+  if(!isLast){
+    document.getElementById('nextBtn').addEventListener('click', ()=>{
+      level++;
+      saveProgress();
+      startLevel(level);
+    });
+  }
+}
+
+startLevel(level);
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+
+</body>
+</html>
