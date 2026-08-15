@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ضرب‌المثل‌یار</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#131B33">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ضرب‌المثل‌یار">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night: #131B33;
+    --night-2: #1D2A4D;
+    --panel: #24325C;
+    --ember: #E8A33D;
+    --ember-dim: #B97D2A;
+    --rust: #C1502E;
+    --sage: #7FA872;
+    --parchment: #F2E8D5;
+    --thread: #D9C9A3;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background:
+      linear-gradient(rgba(19,27,51,0.72), rgba(19,27,51,0.82)),
+      url("background.jpg") no-repeat center center / cover fixed,
+      var(--night);
+    color: var(--parchment);
+    font-family: 'Vazirmatn', sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding: 24px 16px;
+    overflow-x:hidden;
+  }
+
+  .coin-topbar{
+    text-align: center;
+    margin: 0 auto 14px;
+    padding: 8px 18px;
+    background: rgba(36,50,92,0.6);
+    border: 1px solid rgba(217,201,163,0.15);
+    border-radius: 20px;
+    width: fit-content;
+    color: var(--ember);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .wrap{ width:100%; max-width: 560px; margin: 0 auto; }
+
+  .screen{ width:100%; }
+  .screen.hidden{ display:none; }
+
+  header{ text-align:center; margin-bottom: 22px; position:relative; }
+  .ember-glow{
+    position:absolute; top:-40px; left:50%; transform:translateX(-50%);
+    width:180px; height:180px; border-radius:50%;
+    background: radial-gradient(circle, rgba(232,163,61,0.35), transparent 70%);
+    filter: blur(4px);
+    pointer-events:none;
+    animation: flicker 4s ease-in-out infinite;
+  }
+  @keyframes flicker{
+    0%,100%{ opacity:0.7; transform:translateX(-50%) scale(1);}
+    50%{ opacity:1; transform:translateX(-50%) scale(1.06);}
+  }
+  h1{
+    font-family:'Lalezar', sans-serif;
+    font-size: 2.5rem;
+    color: var(--ember);
+    letter-spacing: 1px;
+    position:relative;
+    text-shadow: 0 0 18px rgba(232,163,61,0.35);
+  }
+  .subtitle{
+    color: var(--thread);
+    font-size: 0.9rem;
+    margin-top: 4px;
+    font-weight:500;
+  }
+
+  .kilim{
+    height: 14px;
+    margin: 18px 0;
+    background:
+      linear-gradient(135deg, var(--ember) 25%, transparent 25%) 0 0/16px 16px,
+      linear-gradient(225deg, var(--ember) 25%, transparent 25%) 0 0/16px 16px,
+      linear-gradient(315deg, var(--rust) 25%, transparent 25%) 0 0/16px 16px,
+      linear-gradient(45deg, var(--rust) 25%, transparent 25%) 0 0/16px 16px;
+    opacity:0.85;
+    border-radius: 2px;
+  }
+
+  .card{
+    background: var(--panel);
+    border-radius: 18px;
+    padding: 22px 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    border: 1px solid rgba(217,201,163,0.12);
+  }
+
+  .level-row{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:0.85rem; color: var(--thread); margin-bottom: 6px;
+  }
+  .level-row b{ color: var(--ember); font-weight:700; }
+  .score{ color: var(--sage); font-weight:600; }
+  #levelDifficulty{ color: var(--thread); font-size:0.75rem; margin-right:6px; }
+
+  .word-progress{
+    text-align:center;
+    font-size: 0.78rem;
+    color: var(--thread);
+    margin-bottom: 16px;
+  }
+  .word-progress .dot{
+    display:inline-block; width:8px; height:8px; border-radius:50%;
+    background: rgba(217,201,163,0.25); margin: 0 3px;
+  }
+  .word-progress .dot.done{ background: var(--sage); }
+  .word-progress .dot.current{ background: var(--ember); }
+  .solved-so-far{
+    text-align:center;
+    font-family:'Lalezar', sans-serif;
+    font-size: 1.15rem;
+    color: var(--thread);
+    min-height: 1.6em;
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+
+  /* --- mask / blanks --- */
+  .mask-row{
+    display:flex; gap:8px; justify-content:center; margin-bottom: 22px; flex-wrap:wrap;
+  }
+  .letter-box{
+    width: 40px; height: 46px;
+    border-radius: 10px;
+    background: var(--night-2);
+    border: 1.5px solid rgba(217,201,163,0.2);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Lalezar', sans-serif;
+    font-size: 1.4rem;
+    color: var(--ember);
+  }
+  .letter-box.given{
+    border-color: var(--ember-dim);
+    background: rgba(232,163,61,0.1);
+  }
+  .letter-box.filled{
+    border-color: var(--sage);
+    color: var(--sage);
+    background: rgba(127,168,114,0.12);
+  }
+  .letter-box.attempt{
+    border-color: var(--thread);
+    color: var(--parchment);
+    background: rgba(217,201,163,0.08);
+  }
+  .letter-box.wrong{ animation: shake .3s; border-color: var(--rust); }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-4px);}
+    75%{transform:translateX(4px);}
+  }
+
+  /* --- letter tiles pool --- */
+  .tile-row{
+    display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom: 16px;
+  }
+  .tile{
+    width: 46px; height: 46px;
+    border-radius: 10px;
+    background: var(--ember);
+    color: var(--night);
+    border:none;
+    font-family:'Lalezar', sans-serif;
+    font-size: 1.3rem;
+    cursor:pointer;
+    transition: transform .15s, opacity .15s;
+  }
+  .tile:hover{ transform: translateY(-2px); }
+  .tile:active{ transform: scale(0.92); }
+  .tile.used{ visibility:hidden; }
+  .tile.wrong{ animation: shake .3s; background: var(--rust); }
+
+  /* --- Arrange phase (word order) --- */
+  .arrange-area{ text-align:center; }
+  .answer-row{
+    min-height: 54px;
+    background: var(--night-2);
+    border-radius: 12px;
+    border: 1.5px dashed rgba(217,201,163,0.3);
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;
+    padding: 10px;
+    margin-bottom: 16px;
+  }
+  .chip{
+    background: var(--ember);
+    color: var(--night);
+    font-weight:700;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border:none;
+    cursor:pointer;
+    font-family:'Vazirmatn', sans-serif;
+    font-size: 0.95rem;
+    transition: transform .15s, opacity .15s;
+  }
+  .chip:hover{ transform: translateY(-2px); }
+  .chip:active{ transform: scale(0.95); }
+  .chip.placed{
+    background: var(--panel);
+    color: var(--thread);
+    border: 1px solid var(--thread);
+    cursor: default;
+  }
+  .pool{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+
+  /* --- Buttons --- */
+  .actions{ display:flex; gap:10px; margin-top: 18px; justify-content:center; flex-wrap:wrap;}
+  button.primary{
+    background: var(--ember);
+    color: var(--night);
+    border:none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-family:'Vazirmatn', sans-serif;
+    font-weight:700;
+    font-size: 0.95rem;
+    cursor:pointer;
+    transition: filter .15s, transform .15s;
+  }
+  button.primary:hover{ filter: brightness(1.08); transform: translateY(-1px);}
+  button.primary:disabled{ opacity:0.4; cursor:not-allowed; transform:none; }
+  button.ghost{
+    background: transparent;
+    color: var(--thread);
+    border: 1.5px solid rgba(217,201,163,0.3);
+    padding: 11px 18px;
+    border-radius: 24px;
+    font-family:'Vazirmatn', sans-serif;
+    font-size: 0.9rem;
+    cursor:pointer;
+  }
+  button.ghost:hover{ border-color: var(--ember); color: var(--ember); }
+
+  .feedback{ text-align:center; margin-top:14px; font-weight:600; min-height:1.4em; }
+  .feedback.ok{ color: var(--sage); }
+  .feedback.bad{ color: var(--rust); }
+
+  .win-screen{ text-align:center; padding: 10px 0; }
+  .win-screen .proverb-final{
+    font-family:'Lalezar', sans-serif;
+    font-size: 1.5rem;
+    color: var(--ember);
+    line-height: 2;
+    margin: 14px 0 20px;
+  }
+
+  footer{ text-align:center; margin-top: 18px; color: var(--thread); font-size:0.75rem; opacity:0.7; }
+
+  /* --- Menu screen --- */
+  .menu-buttons{ display:flex; flex-direction:column; gap:14px; margin-bottom:10px; }
+  .big-btn{ padding:16px; font-size:1.05rem; border-radius:16px; }
+  .disabled-soon{
+    opacity:0.55; cursor:not-allowed;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+  }
+  .soon-badge{ font-size:0.7rem; font-weight:500; }
+
+  .icon-btn{
+    position:fixed;
+    width:44px; height:44px;
+    border-radius:50%;
+    background: var(--panel);
+    border:1px solid rgba(217,201,163,0.25);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.25rem;
+    cursor:pointer;
+    z-index:20;
+    box-shadow:0 4px 14px rgba(0,0,0,0.35);
+  }
+  .icon-btn.top-left{ top:16px; left:16px; }
+  .icon-btn.bottom-left{ bottom:16px; left:16px; }
+  .icon-btn:hover{ border-color: var(--ember); }
+
+  /* --- Panels (support / settings) --- */
+  .panel-overlay{
+    position:fixed; inset:0;
+    background:rgba(19,27,51,0.72);
+    display:flex; align-items:stretch; justify-content:flex-start;
+    z-index:50;
+  }
+  .panel-overlay.hidden{ display:none; }
+  .side-panel{
+    width: min(280px, 78vw);
+    background: var(--panel);
+    padding: 26px 18px;
+    box-shadow: 6px 0 24px rgba(0,0,0,0.45);
+    position:relative;
+    border-left: 1px solid rgba(217,201,163,0.12);
+    overflow-y:auto;
+  }
+  .close-panel{
+    position:absolute; top:10px; left:12px;
+    background:transparent; border:none; color:var(--thread); font-size:1.3rem; cursor:pointer;
+    line-height:1;
+  }
+  .side-panel h3{ font-family:'Lalezar', sans-serif; color:var(--ember); font-size:1.3rem; margin-bottom:20px; }
+  .panel-link{
+    display:block;
+    color: var(--parchment);
+    background: rgba(217,201,163,0.08);
+    padding: 13px 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    text-decoration:none;
+    font-weight:600;
+    font-size:0.9rem;
+  }
+  .panel-link:hover{ background: rgba(232,163,61,0.18); }
+  .slider-label{
+    display:block; margin-bottom:24px; font-size:0.85rem; color:var(--thread);
+  }
+  .slider-label input[type=range]{ width:100%; margin-top:10px; accent-color: var(--ember); }
+
+  /* --- Difficulty modal (centered) --- */
+  #difficultyModal{ align-items:center; justify-content:center; }
+  #difficultyModal .side-panel{
+    width: min(320px, 85vw);
+    border-radius:18px;
+    border-left:none;
+    box-shadow:0 12px 34px rgba(0,0,0,0.5);
+  }
+
+  /* --- Stage select --- */
+  .stage-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; gap:10px; }
+  .screen-title{ font-family:'Lalezar', sans-serif; color:var(--ember); font-size:1.4rem; }
+  .small-btn{ padding:8px 14px; font-size:0.8rem; }
+
+  .stage-grid{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .stage-tile{
+    aspect-ratio:1;
+    border-radius:12px;
+    background: var(--panel);
+    border:1.5px solid rgba(217,201,163,0.2);
+    color: var(--parchment);
+    font-family:'Lalezar', sans-serif;
+    font-size:1.1rem;
+    cursor:pointer;
+  }
+  .stage-tile:hover{ border-color:var(--ember); }
+  .stage-tile.done{ border-color:var(--sage); color:var(--sage); }
+  .stage-tile.locked{ opacity:0.35; cursor:not-allowed; color:var(--thread); }
+
+  .pagination{ display:flex; align-items:center; justify-content:space-between; }
+  #pageIndicator{ color:var(--thread); font-size:0.85rem; }
+
+  .game-topbar{ margin-bottom:12px; }
+</style>
+</head>
+<body>
+
+<!-- ===== منوی اصلی ===== -->
+<div class="screen" id="screen-menu">
+  <div class="icon-btn top-left" id="supportBtn" title="پشتیبانی">🎧</div>
+  <div class="icon-btn bottom-left" id="settingsBtn" title="تنظیمات">⚙️</div>
+
+  <div class="wrap">
+    <div class="coin-topbar">🪙 <span id="menuCoinVal">0</span></div>
+    <header>
+      <div class="ember-glow"></div>
+      <h1>ضرب‌المثل‌یار</h1>
+      <div class="subtitle">حرف‌ها رو به ترتیب بزن تا کلمه ساخته بشه</div>
+    </header>
+
+    <div class="kilim"></div>
+
+    <div class="menu-buttons">
+      <button class="primary big-btn" id="btnStart">شروع بازی</button>
+      <button class="primary big-btn disabled-soon" disabled>
+        دوئل <span class="soon-badge">(به زودی)</span>
+      </button>
+      <button class="primary big-btn disabled-soon" disabled>
+        ضرب‌المثل لری <span class="soon-badge">(به زودی)</span>
+      </button>
+    </div>
+
+    <footer>ضرب‌المثل‌یار — ۱۴۰ ضرب‌المثل</footer>
+  </div>
+</div>
+
+<!-- ===== انتخاب مرحله ===== -->
+<div class="screen hidden" id="screen-stage-select">
+  <div class="wrap">
+    <div class="stage-header">
+      <button class="ghost small-btn" id="backToMenuBtn">→ منو</button>
+      <div class="screen-title">انتخاب مرحله</div>
+      <span></span>
+    </div>
+    <div class="stage-grid" id="stageGrid"></div>
+    <div class="pagination">
+      <button class="ghost" id="prevPageBtn">◀ قبلی</button>
+      <span id="pageIndicator"></span>
+      <button class="ghost" id="nextPageBtn">بعدی ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== صفحه‌ی بازی ===== -->
+<div class="screen hidden" id="screen-game">
+  <div class="wrap">
+    <div class="game-topbar">
+      <button class="ghost small-btn" id="backToStagesFromGameBtn">→ مراحل</button>
+    </div>
+    <div class="card">
+      <div class="level-row">
+        <span>مرحله <b id="levelNum">1</b> از <b id="levelTotal">140</b><span id="levelDifficulty"></span></span>
+        <span class="score coin">سکه: <span id="coinVal">0</span></span>
+      </div>
+      <div class="word-progress" id="wordProgress"></div>
+      <div class="solved-so-far" id="solvedSoFar"></div>
+
+      <div id="gameArea"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="actions" id="actions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== پنل پشتیبانی ===== -->
+<div class="panel-overlay hidden" id="supportOverlay">
+  <div class="side-panel">
+    <button class="close-panel" id="closeSupportBtn">✕</button>
+    <h3>پشتیبانی</h3>
+    <a class="panel-link" href="https://t.me/iran_lor1" target="_blank" rel="noopener">📣 کانال تلگرام</a>
+    <a class="panel-link" href="https://rubika.ir/zarbolmasalyar" target="_blank" rel="noopener">💬 روبیکا</a>
+    <a class="panel-link" href="https://daramet.com/Zarbolmasalyar" target="_blank" rel="noopener">💛 حمایت از ما</a>
+  </div>
+</div>
+
+<!-- ===== پنل تنظیمات ===== -->
+<div class="panel-overlay hidden" id="settingsOverlay">
+  <div class="side-panel">
+    <button class="close-panel" id="closeSettingsBtn">✕</button>
+    <h3>تنظیمات</h3>
+    <label class="slider-label">صدای آهنگ پس‌زمینه
+      <input type="range" id="musicSlider" min="0" max="100" value="35">
+    </label>
+    <label class="slider-label">صدای افکت‌های بازی
+      <input type="range" id="sfxSlider" min="0" max="100" value="80">
+    </label>
+  </div>
+</div>
+
+<!-- ===== مودال سختی مرحله ===== -->
+<div class="panel-overlay hidden" id="difficultyModal">
+  <div class="side-panel">
+    <button class="close-panel" id="closeDifficultyBtn">✕</button>
+    <h3>سطح این مرحله</h3>
+    <p style="color:var(--thread); font-size:0.85rem; margin-bottom:18px; line-height:1.8;">
+      آسون: حرف اول داده می‌شه<br>سخت: بدون حرف اول
+    </p>
+    <div style="display:flex; gap:10px;">
+      <button class="primary" id="pickEasyBtn" style="flex:1;">آسون</button>
+      <button class="primary" id="pickHardBtn" style="flex:1; background:var(--rust); color:var(--parchment);">سخت</button>
+    </div>
+  </div>
+</div>
+
+<audio id="bgMusic" src="bg-music.mp3" loop preload="auto"></audio>
+<audio id="afarinSound" src="afarin.m4a" preload="auto"></audio>
+
+<script>
+const PROVERBS = [
+  "دست بالای دست بسیار است",
+  "آب در کوزه و ما تشنه‌لبان",
+  "کاچی به از هیچی",
+  "یک دست صدا ندارد",
+  "آب زیر کاه",
+  "هر گردی گردو نیست",
+  "جوجه را آخر پاییز می‌شمرند",
+  "آب رفته به جوی برنمی‌گردد",
+  "دود از کنده بلند می‌شود",
+  "عاقبت گرگ‌زاده گرگ شود",
+  "کاسه داغ‌تر از آش",
+  "سنگ مفت گنجشک مفت",
+  "دیگ به دیگ می‌گوید روت سیاه",
+  "مرگ خوب است ولی برای همسایه",
+  "نوش دارو بعد از مرگ سهراب",
+  "از این ستون به آن ستون فرج است",
+  "کوه به کوه نمی‌رسد آدم به آدم می‌رسد",
+  "دیوار موش دارد موش هم گوش دارد",
+  "سگ زرد برادر شغال است",
+  "هرکه بامش بیش برفش بیشتر",
+  "جوینده یابنده است",
+  "خواستن توانستن است",
+  "کار نیکو کردن از پر کردن است",
+  "دروغگو دشمن خداست",
+  "تا تنور گرم است نان بچسبان",
+  "سیلی نقد به از حلوای نسیه است",
+  "شاهنامه آخرش خوش است",
+  "عجله کار شیطان است",
+  "صبر ایوب می‌خواهد",
+  "کوزه‌گر از کوزه‌ی شکسته آب می‌خورد",
+  "مرغ همسایه غاز است",
+  "نابرده رنج گنج میسر نمی‌شود",
+  "نان به نرخ روز خوردن",
+  "نخود هر آشی بودن",
+  "یک تیر و دو نشان",
+  "آسمان همیشه ابری نیست",
+  "باد آورده را باد می‌برد",
+  "بادمجان بم آفت ندارد",
+  "بار کج به منزل نمی‌رسد",
+  "پول علف خرس نیست",
+  "تخم‌مرغ‌دزد شتردزد می‌شود",
+  "تره به تخمش می‌رود حسنی به باباش",
+  "چاه مکن بهر کسی اول خودت بیفتی",
+  "خر ما از کرگی دم نداشت",
+  "دشمن دانا بهتر از دوست نادان است",
+  "دیوار حاشا بلند است",
+  "زیره به کرمان بردن",
+  "سالی که نکوست از بهارش پیداست",
+  "سنگ بزرگ علامت نزدن است",
+  "شتر دیدی ندیدی",
+  "شکم گشنه ایمان ندارد",
+  "علف باید به دهان بز شیرین بیاید",
+  "فلفل نبین چه ریزه بشکن ببین چه تیزه",
+  "قناعت توانگر کند مرد را",
+  "کار امروز به فردا میفکن",
+  "کبوتر با کبوتر باز با باز",
+  "کیسه‌ی خالی سرپا نمی‌ایستد",
+  "گر صبر کنی ز غوره حلوا سازی",
+  "ماهی را هر وقت از آب بگیری تازه است",
+  "مزد آن گرفت جان برادر که کار کرد",
+  "هر که خربزه می‌خورد پای لرزش هم می‌نشیند",
+  "آدم دانا به نشتر نزند مشت",
+  "آفتاب لب بام",
+  "از آب گل‌آلود ماهی گرفتن",
+  "از این گوش می‌گیرد از آن گوش در می‌کند",
+  "از دماغ فیل افتاده",
+  "اسب پیشکشی را دندان نمی‌شمارند",
+  "با دم شیر بازی نمی‌کنند",
+  "با یک گل بهار نمی‌شود",
+  "تب تند زودسرد است",
+  "تیشه به ریشه خود زدن",
+  "جای سوزن انداختن نیست",
+  "چراغی که به خانه رواست به مسجد حرام است",
+  "حلال‌زاده به عمو رفته",
+  "خودم کردم که لعنت بر خودم باد",
+  "دست‌اش نمک ندارد",
+  "دیر رسیدن بهتر از هرگز نرسیدن است",
+  "رطب خورده منع رطب چون کند",
+  "زبان سرخ سر سبز می‌دهد بر باد",
+  "زیرکاسه نیم‌کاسه است",
+  "صدای دهل از دور خوش است",
+  "غافل از انتظار می‌خورد سیلی",
+  "آب که سربالا برود",
+  "آب پاکی روی دست کسی ریختن",
+  "آسمان به زمین نمی‌آید",
+  "از تو نی به در نمی‌آید",
+  "از ماست که بر ماست",
+  "به آب و آتش زدن",
+  "تخم دو زرده گذاشتن",
+  "جان می‌کند و جان می‌داد",
+  "چوب دو سر طلا",
+  "خواب دیدی خیر باشد",
+  "در خانه اگر کس است یک حرف بس است",
+  "دنیا دار مکافات است",
+  "دود چراغ خوردن",
+  "دوغ و دوشاب را یکی کردن",
+  "روباه دم خود را می‌بیند",
+  "سرکه‌ی مفت از عسل شیرین‌تر است",
+  "سگ صاحبش را می‌شناسد",
+  "سنگ را بسته سگ را باز کرده‌اند",
+  "شاخ و شانه کشیدن",
+  "شتر سواری دولا دولا نمی‌شود",
+  "شیر بی‌یال و دم و اشکم",
+  "طمع سیری ندارد",
+  "عذر بدتر از گناه",
+  "غریبی و بی‌کسی",
+  "کاه از خرمن دیگران نمی‌برند",
+  "کبک سرش را زیر برف کرده",
+  "کوزه هرچه ازش برون تراود همان در اوست",
+  "گرگ باران‌دیده",
+  "گندم از گندم بروید جو ز جو",
+  "لقمه‌ی بزرگ‌تر از دهان",
+  "مار گزیده از ریسمان سیاه و سفید می‌ترسد",
+  "ماست‌ها را کیسه کردن",
+  "مو را از ماست می‌کشد",
+  "میان دعوا حلوا خیر نمی‌کنند",
+  "نان کسی را آجر کردن",
+  "نوکه اومد به بازار کهنه شد دل‌آزار",
+  "همرنگ جماعت شدن",
+  "هرکس در خانه‌اش را ببندد",
+  "یک بام و دو هوا",
+  "یک لاقبا",
+  "آب از آسیاب افتاد",
+  "آب در هاون کوبیدن",
+  "آدم عاقل دوبار از یک سوراخ گزیده نمی‌شود",
+  "از هول حلیم توی دیگ افتادن",
+  "با کاه دیوار می‌کشد",
+  "بادنجان دور قاب‌چین",
+  "باد در قفس کردن",
+  "بختش باز است",
+  "پز عالی جیب خالی",
+  "پیراهن عثمان کردن",
+  "تخته پاره‌ای برای غریق",
+  "جوان همیشه جوان نمی‌ماند",
+  "چیزی که عوض دارد گله ندارد",
+  "خدا رحم به بنده‌اش می‌کند",
+  "خر بیار و باقالی بار کن",
+  "خواهی نشوی رسوا همرنگ جماعت شو",
+  "در سوراخ موش می‌شود",
+  "سالته پیرهنی و آبستنته دامنی"
+];
+
+const SAVE_KEY = 'zarbolmasal_yar_progress';
+const PAGE_SIZE = 15;
+const HARD_MODE_START_INDEX = 70; // from stage 71 (index 70) onward: hard only
+
+function loadProgress(){
+  const fallback = { maxUnlocked:0, completed:[], coins:10, musicVolume:0.35, sfxVolume:0.8 };
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return fallback;
+    const p = JSON.parse(raw);
+    if(typeof p.maxUnlocked === 'number'){
+      return {
+        maxUnlocked: Math.min(Math.max(p.maxUnlocked, 0), PROVERBS.length - 1),
+        completed: Array.isArray(p.completed) ? p.completed : [],
+        coins: Number.isInteger(p.coins) ? p.coins : 10,
+        musicVolume: typeof p.musicVolume === 'number' ? p.musicVolume : 0.35,
+        sfxVolume: typeof p.sfxVolume === 'number' ? p.sfxVolume : 0.8
+      };
+    }
+    // migrate from old save format { level, coins }
+    const oldLevel = Number.isInteger(p.level) ? p.level : 0;
+    const completed = [];
+    for(let i = 0; i < oldLevel; i++) completed.push(i);
+    return {
+      maxUnlocked: Math.min(oldLevel, PROVERBS.length - 1),
+      completed,
+      coins: Number.isInteger(p.coins) ? p.coins : 10,
+      musicVolume: 0.35,
+      sfxVolume: 0.8
+    };
+  } catch(e){
+    return fallback;
+  }
+}
+
+const state = loadProgress();
+let coins = state.coins;
+let maxUnlocked = state.maxUnlocked;
+let completedSet = new Set(state.completed);
+let musicVolume = state.musicVolume;
+let sfxVolume = state.sfxVolume;
+
+function saveProgress(){
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      maxUnlocked, completed: [...completedSet], coins, musicVolume, sfxVolume
+    }));
+  } catch(e){ /* ignore storage errors */ }
+}
+
+let currentStageIndex = 0;
+let hardMode = false;
+let givenCount = 1;
+let words = [];
+let wordIdx = 0;
+let unitsAll = [];
+let lockedUnits = [];
+let attempt = [];
+let pickHistory = [];
+let tiles = [];
+let stagePage = 0;
+let pendingStageIndex = null;
+let stageActive = false;
+
+const gameArea = document.getElementById('gameArea');
+const feedback = document.getElementById('feedback');
+const actions = document.getElementById('actions');
+const wordProgress = document.getElementById('wordProgress');
+document.getElementById('levelTotal').textContent = PROVERBS.length;
+
+function updateCoinDisplay(){
+  document.getElementById('coinVal').textContent = coins;
+  document.getElementById('menuCoinVal').textContent = coins;
+}
+updateCoinDisplay();
+
+/* ===== screens ===== */
+function showScreen(name){
+  document.getElementById('screen-menu').classList.toggle('hidden', name !== 'menu');
+  document.getElementById('screen-stage-select').classList.toggle('hidden', name !== 'stage-select');
+  document.getElementById('screen-game').classList.toggle('hidden', name !== 'game');
+}
+
+document.getElementById('btnStart').addEventListener('click', ()=>{
+  renderStageSelect(Math.floor(maxUnlocked / PAGE_SIZE));
+  showScreen('stage-select');
+});
+document.getElementById('backToMenuBtn').addEventListener('click', ()=> showScreen('menu'));
+document.getElementById('backToStagesFromGameBtn').addEventListener('click', ()=>{
+  renderStageSelect(Math.floor(currentStageIndex / PAGE_SIZE));
+  showScreen('stage-select');
+});
+
+/* ===== stage select ===== */
+function renderStageSelect(page){
+  const totalPages = Math.ceil(PROVERBS.length / PAGE_SIZE);
+  stagePage = Math.min(Math.max(page, 0), totalPages - 1);
+  const start = stagePage * PAGE_SIZE;
+  const end = Math.min(start + PAGE_SIZE, PROVERBS.length);
+
+  const grid = document.getElementById('stageGrid');
+  grid.innerHTML = '';
+  for(let i = start; i < end; i++){
+    const btn = document.createElement('button');
+    const unlocked = i <= maxUnlocked;
+    btn.className = 'stage-tile' + (unlocked ? '' : ' locked') + (completedSet.has(i) ? ' done' : '');
+    btn.textContent = i + 1;
+    btn.disabled = !unlocked;
+    if(unlocked) btn.addEventListener('click', ()=> onStageTileClick(i));
+    grid.appendChild(btn);
+  }
+
+  document.getElementById('pageIndicator').textContent = `صفحه ${stagePage + 1} از ${totalPages}`;
+  document.getElementById('prevPageBtn').disabled = stagePage === 0;
+  document.getElementById('nextPageBtn').disabled = stagePage >= totalPages - 1;
+}
+document.getElementById('prevPageBtn').addEventListener('click', ()=> renderStageSelect(stagePage - 1));
+document.getElementById('nextPageBtn').addEventListener('click', ()=> renderStageSelect(stagePage + 1));
+
+function onStageTileClick(i){
+  if(i >= HARD_MODE_START_INDEX){
+    launchStage(i, true);
+  } else {
+    pendingStageIndex = i;
+    document.getElementById('difficultyModal').classList.remove('hidden');
+  }
+}
+document.getElementById('pickEasyBtn').addEventListener('click', ()=>{
+  document.getElementById('difficultyModal').classList.add('hidden');
+  launchStage(pendingStageIndex, false);
+});
+document.getElementById('pickHardBtn').addEventListener('click', ()=>{
+  document.getElementById('difficultyModal').classList.add('hidden');
+  launchStage(pendingStageIndex, true);
+});
+document.getElementById('closeDifficultyBtn').addEventListener('click', ()=>{
+  document.getElementById('difficultyModal').classList.add('hidden');
+});
+
+function launchStage(i, hard){
+  const resuming = (i === currentStageIndex) && (hard === hardMode) && stageActive;
+  currentStageIndex = i;
+  hardMode = hard;
+  showScreen('game');
+  if(resuming){
+    return; // keep existing in-progress word/tile/arrange state as-is
+  }
+  startLevel(i);
+}
+
+/* ===== support / settings panels ===== */
+document.getElementById('supportBtn').addEventListener('click', ()=>{
+  document.getElementById('supportOverlay').classList.remove('hidden');
+});
+document.getElementById('closeSupportBtn').addEventListener('click', ()=>{
+  document.getElementById('supportOverlay').classList.add('hidden');
+});
+document.getElementById('supportOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'supportOverlay') e.currentTarget.classList.add('hidden');
+});
+
+document.getElementById('settingsBtn').addEventListener('click', ()=>{
+  document.getElementById('settingsOverlay').classList.remove('hidden');
+});
+document.getElementById('closeSettingsBtn').addEventListener('click', ()=>{
+  document.getElementById('settingsOverlay').classList.add('hidden');
+});
+document.getElementById('settingsOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'settingsOverlay') e.currentTarget.classList.add('hidden');
+});
+
+/* ===== audio ===== */
+const bgMusic = document.getElementById('bgMusic');
+const afarinSound = document.getElementById('afarinSound');
+bgMusic.volume = musicVolume;
+afarinSound.volume = sfxVolume;
+
+const musicSlider = document.getElementById('musicSlider');
+const sfxSlider = document.getElementById('sfxSlider');
+musicSlider.value = Math.round(musicVolume * 100);
+sfxSlider.value = Math.round(sfxVolume * 100);
+musicSlider.addEventListener('input', ()=>{
+  musicVolume = musicSlider.value / 100;
+  bgMusic.volume = musicVolume;
+  saveProgress();
+});
+sfxSlider.addEventListener('input', ()=>{
+  sfxVolume = sfxSlider.value / 100;
+  saveProgress();
+});
+
+let musicStarted = false;
+function tryStartMusic(){
+  if(musicStarted) return;
+  musicStarted = true;
+  bgMusic.play().catch(()=>{ musicStarted = false; });
+}
+document.addEventListener('click', tryStartMusic, { once:true });
+
+function playAfarin(){
+  try{
+    afarinSound.currentTime = 0;
+    afarinSound.volume = sfxVolume;
+    afarinSound.play().catch(()=>{});
+  } catch(e){ /* ignore */ }
+}
+
+/* ===== game logic ===== */
+function toUnits(str){
+  const chars = Array.from(str);
+  const JOINERS = ['\u200C','\u200D'];
+  const units = [];
+  for(const ch of chars){
+    if(JOINERS.includes(ch) && units.length > 0){
+      units[units.length-1] += ch;
+    } else {
+      units.push(ch);
+    }
+  }
+  return units;
+}
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+const PERSIAN_LETTERS = ['ا','ب','پ','ت','ث','ج','چ','ح','خ','د','ذ','ر','ز','ژ','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ک','گ','ل','م','ن','و','ه','ی'];
+const HINT_COST = 3;
+
+function startLevel(i){
+  words = PROVERBS[i].split(' ');
+  wordIdx = 0;
+  stageActive = true;
+  feedback.textContent = '';
+  feedback.className = 'feedback';
+  document.getElementById('levelNum').textContent = i+1;
+  document.getElementById('levelDifficulty').textContent = hardMode ? '(سخت)' : '(آسون)';
+  startWordGuess();
+}
+
+function renderWordProgress(){
+  wordProgress.innerHTML = words.map((w,i)=>{
+    const cls = i < wordIdx ? 'done' : (i===wordIdx ? 'current' : '');
+    return `<span class="dot ${cls}"></span>`;
+  }).join('');
+}
+
+function renderSolvedSoFar(){
+  const el = document.getElementById('solvedSoFar');
+  if(!el) return;
+  const solvedWords = words.slice(0, wordIdx);
+  el.textContent = solvedWords.length ? solvedWords.join(' ‌ ') + ' …' : '';
+}
+
+function startWordGuess(){
+  const word = words[wordIdx];
+  unitsAll = toUnits(word);
+  givenCount = hardMode ? 0 : 1;
+  lockedUnits = unitsAll.slice(0, givenCount);
+  attempt = [];
+  pickHistory = [];
+
+  const neededUnits = unitsAll.slice(givenCount);
+  const remaining = neededUnits.map((ch,i)=>({ch, id:i, used:false}));
+
+  if(neededUnits.length > 0){
+    const decoyCount = Math.random() < 0.5 ? 1 : 2;
+    for(let k=0;k<decoyCount;k++){
+      const decoyCh = PERSIAN_LETTERS[Math.floor(Math.random()*PERSIAN_LETTERS.length)];
+      remaining.push({ch: decoyCh, id: neededUnits.length + k, used:false, decoy:true});
+    }
+  }
+
+  tiles = shuffle(remaining);
+  renderWordProgress();
+  renderSolvedSoFar();
+  renderGuess();
+  actions.innerHTML = `
+    <button class="ghost" id="undoBtn">بازگشت یک حرف</button>
+    <button class="ghost" id="hintBtn">💡 کمک (${HINT_COST} سکه)</button>
+  `;
+  document.getElementById('undoBtn').addEventListener('click', undoLetter);
+  document.getElementById('hintBtn').addEventListener('click', useHint);
+
+  if(lockedUnits.length === unitsAll.length){
+    wordSuccess();
+  }
+}
+
+function useHint(){
+  if(coins < HINT_COST){
+    feedback.textContent = 'سکه‌ی کافی نداری';
+    feedback.className = 'feedback bad';
+    return;
+  }
+  if(attempt.length > 0){
+    pickHistory.forEach(id=>{
+      const t = tiles.find(x=>x.id===id);
+      if(t) t.used = false;
+    });
+    attempt = [];
+    pickHistory = [];
+  }
+
+  const neededChar = unitsAll[lockedUnits.length];
+  if(!neededChar) return;
+  const t = tiles.find(x => x.ch === neededChar && !x.used && !x.decoy);
+  if(!t) return;
+
+  coins -= HINT_COST;
+  updateCoinDisplay();
+  saveProgress();
+
+  t.used = true;
+  lockedUnits.push(t.ch);
+  renderGuess();
+
+  if(lockedUnits.length === unitsAll.length){
+    wordSuccess();
+  }
+}
+
+function renderGuess(){
+  gameArea.innerHTML = '';
+
+  const maskRow = document.createElement('div');
+  maskRow.className = 'mask-row';
+  for(let i=0;i<unitsAll.length;i++){
+    const box = document.createElement('div');
+    if(i < lockedUnits.length){
+      box.className = 'letter-box ' + (i < givenCount ? 'given' : 'filled');
+      box.textContent = lockedUnits[i];
+    } else if(i < lockedUnits.length + attempt.length){
+      box.className = 'letter-box attempt';
+      box.textContent = attempt[i - lockedUnits.length];
+    } else {
+      box.className = 'letter-box';
+      box.textContent = '';
+    }
+    maskRow.appendChild(box);
+  }
+  gameArea.appendChild(maskRow);
+
+  const tileRow = document.createElement('div');
+  tileRow.className = 'tile-row';
+  tiles.forEach(t=>{
+    const btn = document.createElement('button');
+    btn.className = 'tile' + (t.used ? ' used' : '');
+    btn.textContent = t.ch;
+    btn.disabled = t.used;
+    btn.addEventListener('click', ()=>pickTile(t.id));
+    tileRow.appendChild(btn);
+  });
+  gameArea.appendChild(tileRow);
+}
+
+function pickTile(id){
+  const t = tiles.find(x=>x.id===id && !x.used);
+  if(!t) return;
+
+  t.used = true;
+  attempt.push(t.ch);
+  pickHistory.push(id);
+  renderGuess();
+
+  const totalLen = lockedUnits.length + attempt.length;
+  if(totalLen === unitsAll.length){
+    const guess = lockedUnits.concat(attempt).join('');
+    if(guess === words[wordIdx]){
+      wordSuccess();
+    } else {
+      feedback.textContent = 'اشتباهه، دوباره بچین';
+      feedback.className = 'feedback bad';
+      const boxes = gameArea.querySelectorAll('.letter-box.attempt');
+      boxes.forEach(b=>b.classList.add('wrong'));
+      setTimeout(()=>{
+        pickHistory.forEach(pid=>{
+          const tt = tiles.find(x=>x.id===pid);
+          if(tt) tt.used = false;
+        });
+        attempt = [];
+        pickHistory = [];
+        feedback.textContent = '';
+        feedback.className = 'feedback';
+        renderGuess();
+      }, 700);
+    }
+  }
+}
+
+function wordSuccess(){
+  feedback.textContent = 'درسته! 👏';
+  feedback.className = 'feedback ok';
+  setTimeout(()=>{
+    wordIdx++;
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+    if(wordIdx === words.length){
+      startArrangePhase();
+    } else {
+      startWordGuess();
+    }
+  }, 500);
+}
+
+function undoLetter(){
+  if(attempt.length === 0) return;
+  attempt.pop();
+  const lastId = pickHistory.pop();
+  const t = tiles.find(x=>x.id===lastId);
+  if(t) t.used = false;
+  renderGuess();
+}
+
+function startArrangePhase(){
+  wordProgress.innerHTML = '';
+  document.getElementById('solvedSoFar').textContent = '';
+  const shuffled = shuffle(words);
+  let placed = [];
+
+  gameArea.innerHTML = `
+    <div class="arrange-area">
+      <div class="answer-row" id="answerRow"></div>
+      <div class="pool" id="pool"></div>
+    </div>
+  `;
+  feedback.textContent = 'کلمه‌ها رو به ترتیب درست بزن';
+  feedback.className = 'feedback';
+
+  const pool = document.getElementById('pool');
+  shuffled.forEach((w)=>{
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.textContent = w;
+    btn.addEventListener('click', ()=>{
+      placed.push(w);
+      btn.remove();
+      renderAnswerRow(placed);
+      if(placed.length === words.length) checkArrangement(placed);
+    });
+    pool.appendChild(btn);
+  });
+
+  renderAnswerRow(placed);
+  actions.innerHTML = `<button class="ghost" id="resetArrangeBtn">دوباره بچین</button>`;
+  document.getElementById('resetArrangeBtn').addEventListener('click', startArrangePhase);
+}
+
+function renderAnswerRow(placed){
+  const row = document.getElementById('answerRow');
+  row.innerHTML = '';
+  placed.forEach(w=>{
+    const chip = document.createElement('span');
+    chip.className = 'chip placed';
+    chip.textContent = w;
+    row.appendChild(chip);
+  });
+}
+
+function checkArrangement(placed){
+  const guess = placed.join(' ');
+  const answer = words.join(' ');
+  if(guess === answer){
+    showWin();
+  } else {
+    feedback.textContent = 'ترتیب درست نیست، دوباره امتحان کن';
+    feedback.className = 'feedback bad';
+    setTimeout(startArrangePhase, 900);
+  }
+}
+
+function showWin(){
+  stageActive = false;
+  const alreadyDone = completedSet.has(currentStageIndex);
+  if(!alreadyDone){
+    coins += 12;
+    completedSet.add(currentStageIndex);
+    if(currentStageIndex === maxUnlocked && maxUnlocked < PROVERBS.length - 1){
+      maxUnlocked++;
+    }
+    saveProgress();
+  }
+  updateCoinDisplay();
+  playAfarin();
+
+  gameArea.innerHTML = `
+    <div class="win-screen">
+      <div>🎉 آفرین!</div>
+      <div class="proverb-final">${words.join(' ')}</div>
+    </div>
+  `;
+  feedback.textContent = '';
+
+  const isLast = currentStageIndex === PROVERBS.length - 1;
+  actions.innerHTML = `
+    ${isLast ? '' : '<button class="primary" id="nextBtn">مرحله بعد</button>'}
+    <button class="ghost" id="backToStagesBtn">بازگشت به مراحل</button>
+  `;
+  if(!isLast){
+    document.getElementById('nextBtn').addEventListener('click', ()=>{
+      onStageTileClick(currentStageIndex + 1);
+    });
+  }
+  document.getElementById('backToStagesBtn').addEventListener('click', ()=>{
+    renderStageSelect(Math.floor(currentStageIndex / PAGE_SIZE));
+    showScreen('stage-select');
+  });
+}
+
+showScreen('menu');
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+
+</body>
+</html>
